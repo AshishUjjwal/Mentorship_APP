@@ -3,11 +3,12 @@
 import { Router } from 'express';
 const router = Router();
 
-import { register } from '../Controllers/authController.js';
+import { register, login } from '../Controllers/authController.js';
+import { verifyJWT } from '../Middleware/auth.middleware.js';
 
 
 router.route('/register').post(register);
-// router.post('/login', authController.login);
-// router.post('/logout', authController.logout);
+router.route('/login').post(login);
+router.route('/logout').post(verifyJWT, logout);
 
 export default router;
