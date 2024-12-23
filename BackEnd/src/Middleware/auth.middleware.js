@@ -1,7 +1,7 @@
 
 
 import jwt from "jsonwebtoken";
-// import { User } from "../Models/user.model.js";
+import User from "../Models/User.js";
 
 
 export const verifyJWT = (async(req, _, next) =>{
@@ -31,7 +31,7 @@ export const verifyJWT = (async(req, _, next) =>{
             console.log(token);
     
         if (!token) {
-            throw new ApiError("Not authorized,... token is required", 401);
+            console.log("Not authorized,... token is required");
         }
         
         // Verify the JWT token using the secret key.
@@ -48,10 +48,10 @@ export const verifyJWT = (async(req, _, next) =>{
         // Issued at time (iat)
         // Custom claims (user role, permissions, etc.)
     
-        const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
+        const user = await User.findByEmail(decodedToken?.email).select("-password -refreshToken")
         // console.log(user.name);
         if(!user) {
-            throw new ApiError("User not found!!", 404);
+            console.log("User not found!!");
         }
     
         // it helps to fetch the user data when user is logged in. 
@@ -60,7 +60,7 @@ export const verifyJWT = (async(req, _, next) =>{
         next();
     } catch (error) {
         console.log("Invalid access token");
-        throw new ApiError(error?.message || "Invalid access token", 405);
+        console.log(error);
         // throw new ApiError("Invalid access token", 405);
     }
 

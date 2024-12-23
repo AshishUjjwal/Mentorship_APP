@@ -1,11 +1,10 @@
-<!-- discovery.html: User Discovery -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentorship Platform - Discover</title>
-    <link rel="stylesheet" href="../CSS/styles.css">
+    <title>Mentorship Platform - Discover Users</title>
+    <link rel="stylesheet" href="../CSS/discovery.css">
 </head>
 <body>
     <div class="container">
@@ -19,8 +18,31 @@
             </select>
             <button id="applyFilters">Apply Filters</button>
         </div>
-        <div id="userList" class="user-list"></div>
+        <div id="userList" class="user-list">
+            <!-- Dummy User Cards -->
+            <div class="user-card">
+                <h2>John Doe</h2>
+                <p><strong>Role:</strong> Mentor</p>
+                <p><strong>Skills:</strong> JavaScript, React, Node.js</p>
+                <p><strong>Interests:</strong> Teaching, Web Development</p>
+                <p><strong>Bio:</strong> Passionate mentor with 5 years of experience in web development.</p>
+            </div>
+            <div class="user-card">
+                <h2>Jane Smith</h2>
+                <p><strong>Role:</strong> Mentee</p>
+                <p><strong>Skills:</strong> Python, Django</p>
+                <p><strong>Interests:</strong> AI, Backend Development</p>
+                <p><strong>Bio:</strong> Aspiring backend developer looking for guidance in AI and Django projects.</p>
+            </div>
+            <div class="user-card">
+                <h2>Emma Brown</h2>
+                <p><strong>Role:</strong> Mentor</p>
+                <p><strong>Skills:</strong> HTML, CSS, JavaScript</p>
+                <p><strong>Interests:</strong> UI/UX Design, Frontend Development</p>
+                <p><strong>Bio:</strong> Frontend designer passionate about creating user-friendly interfaces.</p>
+            </div>
+        </div>
     </div>
-    <script src="js/app.js"></script>
+    <script src="../JS/discovery.js"></script>
 </body>
 </html>

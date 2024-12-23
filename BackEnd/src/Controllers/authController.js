@@ -55,31 +55,57 @@ const login = async (req, res) => {
 
     try {
         // Find the user by email
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findByEmail(email);
 
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
+        // Get the first user from the query result (assuming it's an array)
+        const foundUser = user[0];
+
         // Check if password matches
-        const isPasswordValid = await isPasswordCorrect(password, user.password);
+        const isPasswordValid = await isPasswordCorrect(password, foundUser.password);
 
         if (!isPasswordValid) {
             return res.status(404).json({ message: 'Invalid password' });
         }
 
         // Generate the access token
-        const accessToken = generateAccessToken(user);
+        const accessToken = generateAccessToken(foundUser);
 
-        // Optionally, you can generate a refresh token here (if needed)
+        // Omit password before sending user data
+        const { password: _, ...userWithoutPassword } = foundUser;
 
-        // Send the token to the client
-        res.json({ message: 'Login successful', accessToken });
+        const options = {
+            httpOnly: true,   // To make it accessible to JavaScript
+            secure: true,  // to make it accessible to JavaScript
+            // sameSite: 'Strict', // To prevent CSRF attacks
+        }
+
+        // Send the token and user info (excluding password) to the client
+        return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .json({ message: 'Login successful', accessToken, user: userWithoutPassword });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Database error' });
     }
 };
+
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: { exclude: ['password'] } // Exclude password field from response
+        });
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
 
 // Logout User
 const logout = (req, res) => {
@@ -90,5 +116,6 @@ const logout = (req, res) => {
 export {
     register,
     login,
+    getAllUsers,
     logout,
 }
