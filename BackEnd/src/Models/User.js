@@ -7,7 +7,8 @@ const User = {
     },
 
     create: async (email, password) => {
-        console.log(`Email: `,email);
+        console.log(`Email: `, email);
+        console.log(`Password: `, password);
         await db.query('INSERT INTO users (email, password) VALUES (?, ?)', [email, password]);
     },
 

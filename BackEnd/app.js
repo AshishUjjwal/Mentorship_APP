@@ -2,6 +2,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import connectdb from './src/Database/connectdb.js';
@@ -14,6 +15,12 @@ import authRoutes from './src/Routes/auth.routes.js';
 
 // Middleware
 app.use(bodyParser.json());
+
+// CORS Middleware
+app.use(cors({
+    origin: 'http://127.0.0.1:5500', // Replace with your frontend URL
+    credentials: true, // Allow cookies to be sent with requests
+}));
 
 // Setup session middleware
 app.use(session({

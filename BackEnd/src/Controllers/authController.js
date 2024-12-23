@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User.js';  // Assuming you have Sequelize models for your User
+import  User  from '../Models/User.js';  // Assuming you have Sequelize models for your User
 
 // Method to compare password (using bcrypt)
 const isPasswordCorrect = async (password, hashedPassword) => {
@@ -28,19 +28,19 @@ const register = async (req, res) => {
 
     try {
         // Check if the user already exists using SQL query
-        const existingUser = await User.findOne({ where: { email } });
-        if (existingUser) {
-            return res.status(400).json({ error: 'User already exists' });
-        }
+        // const existingUser = await User.findOne({ where: { email } });
+        // if (existingUser) {
+        //     return res.status(400).json({ error: 'User already exists' });
+        // }
 
         // Hash the password before saving
         const hashedPassword = await bcrypt.hash(password, 10);  // 10 is the salt rounds
 
         // Create new user
-        const newUser = await User.create({
+        const newUser = await User.create(
             email,
-            password: hashedPassword,  // Store the hashed password
-        });
+            hashedPassword,  // Store the hashed password
+        );
 
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
