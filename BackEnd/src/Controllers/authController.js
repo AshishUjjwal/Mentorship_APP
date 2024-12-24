@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import  User  from '../Models/User.js';  // Assuming you have Sequelize models for your User
+// const { Op } = require('sequelize'); // Import Sequelize operators
+import  Op from 'sequelize';
 
 // Method to compare password (using bcrypt)
 const isPasswordCorrect = async (password, hashedPassword) => {
@@ -80,7 +82,7 @@ const login = async (req, res) => {
         const options = {
             httpOnly: true,   // To make it accessible to JavaScript
             secure: true,  // to make it accessible to JavaScript
-            // sameSite: 'Strict', // To prevent CSRF attacks
+            sameSite: 'None', // To prevent CSRF attacks
         }
 
         // Send the token and user info (excluding password) to the client
@@ -94,17 +96,21 @@ const login = async (req, res) => {
     }
 };
 
+
 const getAllUsers = async (req, res) => {
     try {
-        const users = await User.findAll({
-            attributes: { exclude: ['password'] } // Exclude password field from response
-        });
-        res.json(users);
+        const { search, role } = req.query; // Extract query parameters
+
+        // Fetch users from the database
+        const users = await User.findAll( search );
+
+        res.json(users); // Respond with filtered user data
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Database error' });
     }
 };
+
 
 
 // Logout User

@@ -11,6 +11,6 @@ router.route('/register').post(register);
 router.route('/login').post(login);
 router.route('/logout').post(verifyJWT, logout);
 
-router.route('/getallusers').get(verifyJWT, getAllUsers);
+router.route('/getallusers').get( getAllUsers);
 
 export default router;

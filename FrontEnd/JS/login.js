@@ -29,6 +29,7 @@ if (loginForm) {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestBody),
+                credentials: 'include',  // Include cookies in the request
             });
 
             // Parse the response JSON
@@ -41,6 +42,8 @@ if (loginForm) {
                 // Save token to localStorage or a cookie (if included in the response)
                 localStorage.setItem('token', data.accessToken);
                 localStorage.setItem('user', JSON.stringify(data.user));
+                document.cookie = `accessToken=${data.accessToken}; path=/; SameSite=None; Secure`;
+
                 // Redirect to the dashboard or another page
                 window.location.href = 'ProfilePage.html';
             } else {
