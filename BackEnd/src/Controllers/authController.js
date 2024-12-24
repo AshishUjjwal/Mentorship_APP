@@ -1,8 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import  User  from '../Models/User.js';  // Assuming you have Sequelize models for your User
-// const { Op } = require('sequelize'); // Import Sequelize operators
-import  Op from 'sequelize';
+import User from '../Models/User.js';  // Assuming you have Sequelize models for your User
+import db from '../Database/database.js';
 
 // Method to compare password (using bcrypt)
 const isPasswordCorrect = async (password, hashedPassword) => {
@@ -26,34 +25,107 @@ const generateAccessToken = (user) => {
 
 // Register User
 const register = async (req, res) => {
-    const { email, password } = req.body;
+    const { name, email, role, skills, interests, bio, password } = req.body;
+
+    // Convert skills array to a string
+    const skillsString = Array.isArray(skills) ? skills.join(', ') : skills;
+
+    // Log the skills
+    console.log(skillsString);
+    console.log(typeof (skillsString));
 
     try {
         // Check if the user already exists using SQL query
-        // const existingUser = await User.findOne({ where: { email } });
-        // if (existingUser) {
-        //     return res.status(400).json({ error: 'User already exists' });
-        // }
+        const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+        if (existingUser.length > 0) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
 
         // Hash the password before saving
-        const hashedPassword = await bcrypt.hash(password, 10);  // 10 is the salt rounds
+        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
-        // Create new user
-        const newUser = await User.create(
-            email,
-            hashedPassword,  // Store the hashed password
+        // Insert new user into the database
+        const [result] = await db.query(
+            `INSERT INTO users (name, email, role, skills, interests, bio, password) 
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [name, email, role, skillsString, interests, bio, hashedPassword]
         );
 
-        res.status(201).json({ message: 'User registered successfully' });
+        if (result.affectedRows > 0) {
+            res.status(201).json({ message: 'User registered successfully' });
+        } else {
+            res.status(500).json({ error: 'Failed to register user' });
+        }
     } catch (error) {
         console.error('Error during registration:', error);
         res.status(500).json({ error: 'Database error' });
     }
 };
 
+// Edit User Profile
+const editprofile = async (req, res) => {
+    const { name, email, role, skills, interests, bio } = req.body;
+    const userId = req.params.id; // Assuming the user ID is passed as a URL parameter
+
+    // Convert skills array to a string
+    const skillsString = Array.isArray(skills) ? skills.join(', ') : skills;
+
+    try {
+        // Check if the user exists
+        const [existingUser] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+        if (existingUser.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Prepare the update query and parameters
+        const updateValues = [name, email, role, skillsString, interests, bio];
+        let updateQuery = 'UPDATE users SET name = ?, email = ?, role = ?, skills = ?, interests = ?, bio = ?';
+
+        // Execute the update query
+        const [result] = await db.query(updateQuery + ' WHERE id = ?', [...updateValues, userId]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Profile updated successfully' });
+        } else {
+            res.status(500).json({ error: 'Failed to update profile' });
+        }
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
+// Delete User Profile
+const deleteprofile = async (req, res) => {
+    const userId = req.params.id; // Assuming the user ID is passed as a URL parameter
+
+    try {
+        // Check if the user exists
+        const [existingUser] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
+        if (existingUser.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Delete the user
+        const [result] = await db.query('DELETE FROM users WHERE id = ?', [userId]);
+
+        if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Profile deleted successfully' });
+        } else {
+            res.status(500).json({ error: 'Failed to delete profile' });
+        }
+    } catch (error) {
+        console.error('Error deleting profile:', error);
+        res.status(500).json({ error: 'Database error' });
+    }
+};
+
+
 // Login User
 const login = async (req, res) => {
     const { email, password } = req.body;
+
+    console.log(email);
 
     try {
         // Find the user by email
@@ -76,6 +148,8 @@ const login = async (req, res) => {
         // Generate the access token
         const accessToken = generateAccessToken(foundUser);
 
+        console.log(accessToken);
+
         // Omit password before sending user data
         const { password: _, ...userWithoutPassword } = foundUser;
 
@@ -87,9 +161,9 @@ const login = async (req, res) => {
 
         // Send the token and user info (excluding password) to the client
         return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .json({ message: 'Login successful', accessToken, user: userWithoutPassword });
+            .status(200)
+            .cookie("accessToken", accessToken, options)
+            .json({ message: 'Login successful', accessToken, user: userWithoutPassword });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).json({ error: 'Database error' });
@@ -102,7 +176,7 @@ const getAllUsers = async (req, res) => {
         const { search, role } = req.query; // Extract query parameters
 
         // Fetch users from the database
-        const users = await User.findAll( search );
+        const users = await User.findAll(search);
 
         res.json(users); // Respond with filtered user data
     } catch (error) {
@@ -110,8 +184,6 @@ const getAllUsers = async (req, res) => {
         res.status(500).json({ error: 'Database error' });
     }
 };
-
-
 
 // Logout User
 const logout = (req, res) => {
@@ -122,6 +194,8 @@ const logout = (req, res) => {
 export {
     register,
     login,
+    editprofile,
+    deleteprofile,
     getAllUsers,
     logout,
 }

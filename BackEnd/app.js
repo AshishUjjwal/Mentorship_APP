@@ -10,8 +10,7 @@ import connectdb from './src/Database/connectdb.js';
 const app = express();
 
 import authRoutes from './src/Routes/auth.routes.js';
-// import profileRoutes from './src/routes/profileRoutes.js';
-// import requestRoutes from './src/routes/requestRoutes.js';
+// import mentorRoutes from './src/routes/mentor.routes.js';
 
 // Middleware
 app.use(bodyParser.json());
@@ -34,8 +33,7 @@ app.use(session({
 app.use('/auth', authRoutes);
 // http://localhost:8000/auth/*
 
-// app.use('/profile', profileRoutes);
-// app.use('/requests', requestRoutes);
+// app.use('/request', mentorRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

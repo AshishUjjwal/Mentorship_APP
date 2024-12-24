@@ -34,7 +34,7 @@ if (loginForm) {
 
             // Parse the response JSON
             const data = await response.json();
-            console.log(data.user);
+            console.log(data);
 
             // Handle the response
             if (response.ok) {

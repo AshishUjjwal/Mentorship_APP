@@ -52,10 +52,11 @@ const displayUsers = (users) => {
         userCard.classList.add('user-card');
 
         userCard.innerHTML = `
-            <h2>${user.email || 'Unknown Name'}</h2>
+            <h2>${user.name || 'Unknown Name'}</h2>
+            <h2>${user.email || 'Unknown Email'}</h2>
             <p><strong>Role:</strong> ${user.role || 'N/A'}</p>
-            <p><strong>Skills:</strong> ${Array.isArray(user.skills) ? user.skills.join(', ') : 'N/A'}</p>
-            <p><strong>Interests:</strong> ${Array.isArray(user.interests) ? user.interests.join(', ') : 'N/A'}</p>
+            <p><strong>Skills:</strong> ${ user.skills || 'N/A'}</p>
+            <p><strong>Interests:</strong> ${ user.interests || 'N/A'}</p>
             <p><strong>Bio:</strong> ${user.bio || 'No bio available.'}</p>
         `;
 

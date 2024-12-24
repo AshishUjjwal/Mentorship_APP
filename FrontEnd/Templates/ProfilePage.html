@@ -84,20 +84,22 @@
 </head>
 <body>
   <div class="profile-card">
-    <img id="profile-image" src="https://via.placeholder.com/100" alt="Profile Picture">
+    <img id="profile-image" src="../Images/006356.jpg" alt="Profile Picture">
     <h2 id="profile-name">Loading...</h2>
     <p id="profile-email">Loading...</p>
-    <p id="profile-location">Loading...</p>
+    <p id="profile-skills">Loading...</p>
     <p id="profile-bio">Loading...</p>
+    <p id="profile-interest">Loading...</p>
+    <p id="profile-role">Loading...</p>
     <p><a id="profile-linkedin" href="#">LinkedIn Profile</a></p>
     <div class="buttons">
       <button class="edit" onclick="toggleEditForm()">Edit Profile</button>
-      <button class="delete" onclick="deleteProfile()">Delete Profile</button>
+      <button class="delete" onclick="logout()">Logout</button>
     </div>
     <form id="edit-form" onsubmit="saveProfile(event)">
       <input type="text" id="edit-name" placeholder="Name">
       <input type="email" id="edit-email" placeholder="Email">
-      <input type="text" id="edit-location" placeholder="Location">
+      <input type="text" id="edit-skills" placeholder="skills">
       <textarea id="edit-bio" placeholder="Bio"></textarea>
       <input type="url" id="edit-linkedin" placeholder="LinkedIn URL">
       <button type="submit">Save</button>
@@ -119,10 +121,10 @@
       if (user) {
         document.getElementById('profile-name').textContent = user.name || 'Name not provided';
         document.getElementById('profile-email').textContent = user.email || 'Email not provided';
-        document.getElementById('profile-location').textContent = user.location || 'Location not provided';
+        document.getElementById('profile-skills').textContent = user.skills || 'skills not provided';
         document.getElementById('profile-bio').textContent = user.bio || 'Bio not provided';
-        document.getElementById('profile-linkedin').href = user.linkedin || '#';
-        document.getElementById('profile-linkedin').textContent = 'LinkedIn Profile';
+        document.getElementById('profile-interest').textContent = user.interests || 'interests not provided';
+        document.getElementById('profile-role').textContent = user.role ||'LinkedIn Profile';
         // Optionally set the profile image from the user data if available
         document.getElementById('profile-image').src = user.profileImage || 'https://via.placeholder.com/100';
       } else {
@@ -160,11 +162,12 @@
     }
 
     // Function to delete the profile from localStorage and remove the profile card
-    function deleteProfile() {
-      if (confirm('Are you sure you want to delete this profile?')) {
+    function logout() {
+      if (confirm('Are you sure you want to Logout?')) {
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
         document.querySelector('.profile-card').remove();
-        alert('Profile deleted!');
+        alert('Logout Successfull!');
         window.location.href = 'login.html';  // Redirect to login page after deletion
       }
     }
